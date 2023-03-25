@@ -1,4 +1,4 @@
-console.log("Welcome to Spotify");
+console.log("Welcome to Blockify");
 
 // Initialize the Variables
 let songIndex = 0;
@@ -10,7 +10,7 @@ let gif = document.getElementById('gif');
 let songItem = Array.from(document.getElementsByClassName('songItem'));
 
 let songs = [
-    {songName: "Stary-Boy", filePath: "Songs/1.mp3", coverPath: "Covers/1.jpg"},
+    {songName: "Star-Boy", filePath: "Songs/1.mp3", coverPath: "Covers/1.jpg"},
     {songName: "Stereo-Song", filePath: "Songs/2.mp3", coverPath: "Covers/2.jpg"},
     {songName: "Despacito", filePath: "Songs/3.mp3", coverPath: "Covers/3.jpg"},
     {songName: "Sean kingston - eenie meenie", filePath: "Songs/4.mp3", coverPath: "Covers/4.jpg"},

@@ -1,5 +1,5 @@
 # Blockify
 
-# Truffle Steps
+### Truffle Steps
 sudo npm install -g truffle
 truffle init

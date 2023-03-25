@@ -1,9 +1,9 @@
-const SongSC = artifacts.require('SongSC.sol');
+const Blockify = artifacts.require('Blockify.sol');
 
-contract('SongSC', ()=>{
+contract('Blockify', ()=>{
     it('Songs test init', async () => {
-        const songSC = await SongSC.new();
-        const allsongs = await songSC.getAllSongs();
+        const blockify = await Blockify.new();
+        const allsongs = await blockify.getAllSongs();
         assert(allsongs.length == 2)
     });
 })

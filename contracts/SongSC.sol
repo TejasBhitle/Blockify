@@ -4,32 +4,48 @@ pragma solidity <=0.8.19;
 contract SongSC {
     
     struct Song {
-        string id;
+        uint256 sid;
         string name;
+        string hash;
+        address payable artistAddr;
+        uint256 price;
     }
 
-    Song[] allSongs;
+    uint256 songsCount;
+
+    mapping(uint256 => Song) allSongsList;
 
 
-    constructor () public {
-        Song memory s1;
-        s1.id = "sid1";
-        s1.name = "Song 1";
-        addSong(s1);
-
-        Song memory s2;
-        s2.id = "sid2";
-        s2.name = "Song 2";
-        addSong(s2);
+    constructor () {
+        songsCount = 0;
     }
 
-
-    function addSong(Song memory song) public {
-        allSongs.push(song);
+    function addSong(
+        string memory songName,
+        string memory songHash,
+        uint256 songPrice) public {
+        
+        Song memory song;
+        song.name = songName;
+        song.hash = songHash;
+        song.sid = songsCount++;
+        song.price = songPrice;
+        
+        allSongsList[song.sid] = song;
     }
- 
-    function getAllSongs() external view returns(Song[] memory songs) {
-        return allSongs;
+
+    function getSongByID(uint256 sid) public view returns (
+        uint256,
+        string memory,
+        string memory,
+        uint256){
+
+        return (
+            allSongsList[sid].sid,
+            allSongsList[sid].name,
+            allSongsList[sid].hash,
+            allSongsList[sid].price
+        );
     }
 
 }

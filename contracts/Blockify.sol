@@ -8,12 +8,13 @@ contract Blockify {
         string name;
         string hash;
         address payable artistAddr;
-        uint256 score;
+        uint256 cost;
     }
 
     struct User {
         uint256 uid;
         string name;
+        uint256[] songsOwned;
     }
 
     struct Artist {
@@ -29,7 +30,9 @@ contract Blockify {
 
     mapping(uint256 => Song) allSongsList;
     mapping(uint256 => User) allUserList;
+    mapping(address => User) allUsersByAddress;
     mapping(uint256 => Artist) allArtistsList;
+    mapping(address => Artist) allArtistsByAddress;
 
 
     constructor () {
@@ -42,13 +45,13 @@ contract Blockify {
     function addSong(
         string memory songName,
         string memory songHash,
-        uint256 songscore) public {
+        uint256 songCost) public {
         
         Song memory song;
         song.name = songName;
         song.hash = songHash;
         song.sid = songsCount++;
-        song.score = songscore;
+        song.cost = songCost;
         
         allSongsList[song.sid] = song;
     }
@@ -63,8 +66,16 @@ contract Blockify {
             sid,
             allSongsList[sid].name,
             allSongsList[sid].hash,
-            allSongsList[sid].score
+            allSongsList[sid].cost
         );
+    }
+
+    function purchaseSong(uint256 sid) public payable {
+        Song memory songToPurchase = allSongsList[sid];
+        if(msg.value == (songToPurchase.cost * 1 wei)){
+            songToPurchase.artistAddr.transfer(msg.value);
+            allUsersByAddress[msg.sender].songsOwned.push(sid);
+        }
     }
 
     // ------------------ User ------------------ //
@@ -108,6 +119,10 @@ contract Blockify {
             allArtistsList[aid].name,
             allArtistsList[aid].songsOwned
         );
+    }
+
+    function donateToArtist(address payable artistAddress) public payable{
+        artistAddress.transfer(msg.value);
     }
 
 }

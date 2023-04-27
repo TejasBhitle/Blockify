@@ -54,6 +54,11 @@ contract Blockify {
         address addr
     );
 
+    function countTest()
+    public pure returns (int) {
+        return 524288;
+    }
+
     function registerUser(
         string memory userName) 
         public {

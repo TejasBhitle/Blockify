@@ -1,12 +1,20 @@
 const Blockify = artifacts.require('Blockify.sol');
 
 contract('Blockify', ()=>{
-    it('Songs test init', async () => {
+    it('count test', async () => {
         const blockify = await Blockify.new();
-        const allsongs = await blockify.getAllSongs();
-        assert(allsongs.length == 2)
+        const num = await blockify.countTest();
+        assert(num == 524288)
     });
 })
+
+// contract('Blockify', ()=>{
+//     it('Songs test init', async () => {
+//         const blockify = await Blockify.new();
+//         const allsongs = await blockify.getAllSongs();
+//         assert(allsongs.length == 2)
+//     });
+// })
 
 // contract('SongSC', ()=>{
 //     it('Songs test add', async () => {

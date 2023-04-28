@@ -9,6 +9,9 @@ contract Blockify {
         string name;
         string hash;
         address payable artistAddr;
+        string artistName;
+        uint256 likeCount;
+        uint256 dislikeCount;
         uint256 cost;
     }
 
@@ -23,7 +26,7 @@ contract Blockify {
 
     uint256 songsCount;
     uint256 usersCount;
-    uint256 artistsCount;
+    string[] allSongs;
 
     mapping(address => User) allUsersByAddress;
     mapping(address => User) allArtistsByAddress;
@@ -45,7 +48,6 @@ contract Blockify {
     constructor () {
         songsCount = 0;
         usersCount = 0;
-        artistsCount = 0;
     }
 
 
@@ -60,8 +62,8 @@ contract Blockify {
     }
 
     function registerUser(
-        string memory userName) 
-        public {
+        string memory userName
+    ) public {
         
         // check if userName is not empty and if it does not exists already
         require(!compareStrings(userName, ""), "UserName cannot be empty");
@@ -70,6 +72,59 @@ contract Blockify {
         User storage user = allUsersByAddress[msg.sender];
         user.name = userName;
         usersCount++;
+    }
+
+    function getUserNameFromAddress(
+        address userAddr
+    ) public view returns (string memory){
+        return allUsersByAddress[userAddr].name;
+    }
+
+    function getSongDetails(
+        string memory songHash
+    )   public view
+        validSongHash(songHash)
+        returns (
+            string memory,
+            address,
+            string memory,
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        ){
+
+            return (
+                allSongsByHash[songHash].name,
+                allSongsByHash[songHash].artistAddr,
+                allSongsByHash[songHash].artistName,
+                allSongsByHash[songHash].likeCount,
+                allSongsByHash[songHash].dislikeCount,
+                allSongsByHash[songHash].cost,
+                allUsersByAddress[msg.sender].songStatus[songHash]
+            );
+    }
+
+    function getPurchasedSongs()
+        public view 
+        registeredUser(msg.sender)
+        returns (string[] memory){
+
+        return allUsersByAddress[msg.sender].songsBought;
+    }
+
+    function getOwnedSongs()
+        public view 
+        registeredUser(msg.sender)
+        returns (string[] memory){
+
+        return allUsersByAddress[msg.sender].songsOwned;
+    }
+
+    function getAllSongs()
+        public view 
+        returns (string[] memory){
+        return allSongs;
     }
 
 
@@ -83,8 +138,9 @@ contract Blockify {
     function uploadSong(
         string memory songName,
         string memory songHash,
-        uint256 songCost) 
-        public registeredUser(msg.sender) {
+        uint256 songCost
+    ) public 
+      registeredUser(msg.sender) {
 
         // check if hash of the song already exists
         require(!compareStrings(allSongsByHash[songHash].name,""), "Song already exists");
@@ -94,7 +150,12 @@ contract Blockify {
         song.hash = songHash;
         song.cost = songCost;
         song.artistAddr = payable(msg.sender);
+        song.artistName = this.getUserNameFromAddress(msg.sender);
+        song.likeCount = 0;
+        song.dislikeCount = 0;
         songsCount++;
+
+        allSongs.push(songHash);
     }
 
 
@@ -107,10 +168,10 @@ contract Blockify {
     );
 
     function purchaseSong(
-        string memory songHash) 
-        public payable 
-        registeredUser(msg.sender) 
-        validSongHash(songHash) {
+        string memory songHash
+    ) public payable 
+      registeredUser(msg.sender) 
+      validSongHash(songHash) {
 
         // check if 
         // 1. user already owns the song
@@ -132,13 +193,14 @@ contract Blockify {
     );
 
     function likeSong(
-        string memory songHash) 
-        public 
-        registeredUser(msg.sender) 
-        validSongHash(songHash) {
+        string memory songHash
+    ) public 
+      registeredUser(msg.sender) 
+      validSongHash(songHash) {
         
         require(allUsersByAddress[msg.sender].songStatus[songHash] != 3, "Song already liked by the user.");
 
+        allSongsByHash[songHash].likeCount++;
         allSongsByHash[songHash].cost += CHANGE ; // increase popularity
         allUsersByAddress[msg.sender].songStatus[songHash] = 3; //mark as liked
     }
@@ -149,13 +211,14 @@ contract Blockify {
     );
 
     function dislikeSong(
-        string memory songHash) 
-        public 
-        registeredUser(msg.sender) 
-        validSongHash(songHash) {
+        string memory songHash
+    ) public 
+      registeredUser(msg.sender) 
+      validSongHash(songHash) {
             
         require(allUsersByAddress[msg.sender].songStatus[songHash] != 2, "Song already disliked by the user.");
 
+        allSongsByHash[songHash].dislikeCount++;
         allSongsByHash[songHash].cost -= CHANGE; // decrease popularity
         allUsersByAddress[msg.sender].songStatus[songHash] = 2; //mark as disliked
     }
@@ -168,8 +231,8 @@ contract Blockify {
     );
 
     function donateToArtist(
-        address payable artistAddress) 
-        public payable 
+        address payable artistAddress
+    ) public payable 
         registeredUser(msg.sender) 
         registeredUser(artistAddress){
 

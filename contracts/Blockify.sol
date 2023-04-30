@@ -19,7 +19,7 @@ contract Blockify {
         address addr;
         string name;
         string[] songsBought;
-        mapping(string => uint8) songStatus; // 0->default; 1->owned; 2->disliked; 3->liked
+        mapping(string => uint8) songStatus; // 0->default; 1->purchased; 2->disliked; 3->liked; 4->owned
         string[] songsOwned; // User is artist of those songs
     }
 
@@ -156,6 +156,7 @@ contract Blockify {
         songsCount++;
 
         allSongs.push(songHash);
+        allUsersByAddress[msg.sender].songStatus[songHash] = 4; //mark as owner
     }
 
 
@@ -171,19 +172,39 @@ contract Blockify {
         string memory songHash
     ) public payable 
       registeredUser(msg.sender) 
-      validSongHash(songHash) {
+      validSongHash(songHash) 
+      returns (
+            string[] memory,
+            uint256
+        ){
 
         // check if 
         // 1. user already owns the song
         // 2. if the amount equals the cost of the song
-        require(allUsersByAddress[msg.sender].songStatus[songHash] == 0, "Song already purchased by the user.");
+        require(allUsersByAddress[msg.sender].songStatus[songHash] == 1, "Song already purchased by the user.");
         require(allSongsByHash[songHash].cost * 1 wei == msg.value, "Amount is not equal to song's cost.");
 
         // transfer the money to artist of the song
         allSongsByHash[songHash].artistAddr.transfer(msg.value);
 
         // add the song to user's ownedSongs list
-        allUsersByAddress[msg.sender].songsBought.push(songHash);   
+        allUsersByAddress[msg.sender].songsBought.push(songHash);
+
+        // update SongStatus
+        allUsersByAddress[msg.sender].songStatus[songHash] = 1; // mark as purchased
+
+        // emit SongPurchaseEvent(
+        //     allSongsByHash[songHash].name,
+        //     songHash,
+        //     allSongsByHash[songHash].artistAddr,
+        //     allSongsByHash[songHash].cost,
+        //     msg.sender
+        // );
+
+        return(
+            allUsersByAddress[msg.sender].songsBought,
+            allUsersByAddress[msg.sender].songStatus[songHash]
+        );
     }
 
 
@@ -198,6 +219,7 @@ contract Blockify {
       registeredUser(msg.sender) 
       validSongHash(songHash) {
         
+        require(allUsersByAddress[msg.sender].songStatus[songHash] != 0, "Song not owned by the user.");
         require(allUsersByAddress[msg.sender].songStatus[songHash] != 3, "Song already liked by the user.");
 
         allSongsByHash[songHash].likeCount++;
@@ -215,7 +237,8 @@ contract Blockify {
     ) public 
       registeredUser(msg.sender) 
       validSongHash(songHash) {
-            
+        
+        require(allUsersByAddress[msg.sender].songStatus[songHash] != 0, "Song not owned by the user.");
         require(allUsersByAddress[msg.sender].songStatus[songHash] != 2, "Song already disliked by the user.");
 
         allSongsByHash[songHash].dislikeCount++;

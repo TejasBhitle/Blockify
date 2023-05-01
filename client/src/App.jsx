@@ -7,10 +7,6 @@ import {
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// import Intro from "./components/Intro/";
-// import Setup from "./components/Setup";
-// import Demo from "./components/Demo";
-// import Footer from "./components/Footer";
 import Home from "./Screens/Home";
 
 import useEth from './contexts/EthContext/useEth';
@@ -24,7 +20,7 @@ function App() {
   const { state } = useEth();
   const [loading, setLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState("Trying to connect to your blockchain wallet.... Please make sure you are connected to the correct blockchain network.");
-  console.log("state: ", state);
+  // console.log("state: ", state);
 
   useEffect(() => {
     if (state.contract !== null && state.account !== null) {

@@ -127,7 +127,7 @@ export default function useTable(records, headCells, filterFn) {
     }
 
     const recordsAfterPagingAndSorting = () => {
-        console.log("recordsAfterPagingAndSorting",order, orderBy)
+        // console.log("recordsAfterPagingAndSorting",order, orderBy)
         return stableSort(
             filterFn.fn(records),
             getComparator(order, orderBy)

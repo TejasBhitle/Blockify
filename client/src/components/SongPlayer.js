@@ -2,6 +2,8 @@ import React from 'react'
 
 const SongPlayer = ({ selectedSong }) => {
     const { songName, songArtist, songHash } = selectedSong;
+  console.log("songHash", songHash);
+  console.log("SongUrl", `https://ipfs.io/ipfs/${songHash}`);
   return (
     <div style={{
       display: "flex",

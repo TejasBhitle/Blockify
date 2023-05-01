@@ -29,7 +29,6 @@ contract Blockify {
     string[] allSongs;
 
     mapping(address => User) allUsersByAddress;
-    mapping(address => User) allArtistsByAddress;
     mapping(string => Song) allSongsByHash;
     mapping(string => bool) isUserNameTaken;
 
@@ -160,6 +159,8 @@ contract Blockify {
 
         allSongs.push(songHash);
         allUsersByAddress[msg.sender].songStatus[songHash] = 4; //mark as owner
+
+        allUsersByAddress[msg.sender].songsOwned.push(songHash);
 
         emit SongUploadEvent(songName, songHash, song.artistAddr, songCost);
     }

@@ -191,7 +191,7 @@ const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, ha
             <Paper className={classes.pageContent}>
                 <Toolbar>
                     <Controls.Input
-                        label="Search Employees"
+                        label="Search Songs By Name or Artist"
                         className={classes.searchInput}
                         InputProps={{
                             startAdornment: (

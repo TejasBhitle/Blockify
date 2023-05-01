@@ -22,22 +22,70 @@ function App() {
   const classes = useStyles();
 
   const { state } = useEth();
+  const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState("Trying to connect to your blockchain wallet.... Please make sure you are connected to the correct blockchain network.");
   console.log("state: ", state);
 
-  // useEffect(() => {
-  //   console.log("state: ", state);
-  //   if (state.contract !== undefined) {
-  //     state?.contract?.events?.Song({ filter: { myParam: 123 } })
-  //       .on('data', event => console.log(event))
-  //       .on('error', error => console.error(error));
-  //   }
-  // }, [state]);
+  useEffect(() => {
+    if (state.contract !== null && state.account !== null) {
+      setLoading(false);
+    } else if (state.account !== null && state.contract === null) {
+      setLoadingMessage("Contract not found. Please make sure you are connected to the correct blockchain network.");
+    } else if (state.account === null) {
+      setLoadingMessage("Trying to connect to your blockchain wallet.... Please make sure you are connected to the correct blockchain network.");
+    }
+  }, [state]);
 
   return (
     <>
       <CssBaseline />
       <div className={classes.app} >
-        { (state.userName === "" || state.userName === undefined || state.userName === null) ?
+        {loading ? 
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100vh",
+            width: "100vw",
+          }}>
+            <h1
+              style={{
+                color: "white",
+                background: "#253053",
+                fontSize: "3rem",
+                fontWeight: "bold",
+                marginBottom: "1rem",
+                padding: "1rem",
+              }}
+            >
+              Welcome to Blockify
+            </h1>
+            <h2
+              style={{
+                color: "#253053", 
+                fontSize: "2rem",
+                fontWeight: "bold",
+                marginBottom: "1rem",
+                padding: "1rem",
+              }}
+            >
+              Loading...
+            </h2>
+            <h3
+              style={{
+                color: "#253053", 
+                fontSize: "1rem",
+                fontWeight: "bold",
+                marginBottom: "1rem",
+                padding: "1rem",
+              }}
+            >
+              {loadingMessage}
+            </h3>
+          </div>
+          :
+          (state.userName === "" || state.userName === undefined || state.userName === null) ?
           <Register />
           :
           <Home />

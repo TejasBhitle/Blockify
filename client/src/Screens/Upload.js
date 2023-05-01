@@ -41,11 +41,6 @@ const Upload = ({selectedSong, setSelectedSong}) => {
     }
   }, [state.contract, state.account, toggle]);
 
-  
-  // const [songName, setSongName] = useState("");
-  // const [songCost, setSongCost] = useState(0);
-  // const [songFile, setSongFile] = useState("");
-
   const handleAddNewSong = async ({songName, songCost, songFile, closePopup}) => {
     const ipfsUpload = await state.ipfsClient.add(songFile);
     console.log(ipfsUpload);

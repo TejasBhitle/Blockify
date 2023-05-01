@@ -64,14 +64,6 @@ export default function UploadForm(props) {
         }
     };
 
-    // useEffect(() => {
-    //     if (song != null)
-    //         setValues({
-    //             donationAmount: 0,
-    //             ...song,
-    //         });
-    // }, [song, setValues]);
-
     return (
         <Form onSubmit={handleSubmit}>
             <Grid container>
@@ -85,7 +77,7 @@ export default function UploadForm(props) {
                     />
                     <Controls.Input
                         name="songCost"
-                        label="Artist Address"
+                        label="Song Cost"
                         value={values.songCost}
                         onChange={handleInputChange}
                         error={errors.songCost}
@@ -95,7 +87,7 @@ export default function UploadForm(props) {
                 <Grid item xs={6}>
                     <Controls.Input
                         name="songFile"
-                        label="Song File .mp3"
+                        // label="Song File .mp3"
                         value={values.songFile}
                         onChange={handleInputChange}
                         error={errors.songFile}

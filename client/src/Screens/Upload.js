@@ -42,15 +42,11 @@ const Upload = ({selectedSong, setSelectedSong}) => {
   }, [state.contract, state.account, toggle]);
 
   
-  const [songName, setSongName] = useState("");
-  const [songCost, setSongCost] = useState(0);
-  const [songFile, setSongFile] = useState("");
+  // const [songName, setSongName] = useState("");
+  // const [songCost, setSongCost] = useState(0);
+  // const [songFile, setSongFile] = useState("");
 
-  const uploadSong = async () => {
-    if (!songName || !songCost || !songFile) {
-      window.alert("Please fill all the fields");
-      return;
-    };
+  const handleAddNewSong = async ({songName, songCost, songFile, closePopup}) => {
     const ipfsUpload = await state.ipfsClient.add(songFile);
     console.log(ipfsUpload);
     const songHash = ipfsUpload.path;
@@ -62,6 +58,8 @@ const Upload = ({selectedSong, setSelectedSong}) => {
         toast.success('Song uploaded !', {
           position: toast.POSITION.TOP_RIGHT
         });
+        closePopup();
+        setToggle(toggle => !toggle);
       }).catch(err => {
         toast.error(Util.metamaskErrorParser(err), {
           position: toast.POSITION.TOP_RIGHT
@@ -84,39 +82,9 @@ const Upload = ({selectedSong, setSelectedSong}) => {
           setSelectedSong={setSelectedSong}
           screen='upload'
           setToggle={setToggle}
+          handleAddNewSong={handleAddNewSong}
         />
       </div>
-      
-      {/* <div>
-        <input
-          type="text"
-          placeholder="Song Name"
-          value={songName}
-          onChange={(e) => setSongName(e.target.value)}
-        />
-        <input
-          type="number"
-
-          placeholder="Song Cost"
-          value={songCost}
-          onChange={(e) => setSongCost(e.target.value)}
-        />
-        <input
-          type="file"
-          placeholder="Song File"
-          // value={songFile}
-          onChange={(e) => {
-            const file = e.target.files[0];
-              setSongFile(file);
-          }}
-        /> */}
-        {/* {songFile && <p>{songFile.name}</p>} */}
-        {/* <button
-          onClick={uploadSong}
-        >
-          Upload
-        </button>
-      </div>  */}
     </div>
   )
 }

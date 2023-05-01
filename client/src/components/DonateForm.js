@@ -22,16 +22,17 @@ export default function DonateForm(props) {
 
     const validate = (fieldValues = values) => {
         let temp = { ...errors };
+        if ("artistName" in fieldValues)
+            temp.artistName = fieldValues.artistName
+                ? ""
+                : "Artist not found.";
         if ("donationAmount" in fieldValues)
-        console.log("donationAmount", fieldValues.donationAmount, fieldValues.donationAmount !== 0);
-        if ("donationAmount" in fieldValues)
-        temp.donationAmount = (fieldValues.donationAmount !== 0)
-        ? ""
-        : "This field is required.";
+            temp.donationAmount = (fieldValues.donationAmount !== 0)
+            ? ""
+            : "This field is required.";
         setErrors({
             ...temp,
         });
-        console.log("fieldValues", fieldValues, values, fieldValues===values, Object.values(temp).every((x) => x === ""));
 
         if (fieldValues === values)
             return Object.values(temp).every((x) => x === "");

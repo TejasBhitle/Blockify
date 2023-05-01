@@ -177,13 +177,13 @@ const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, ha
                 toast.success("Thanks for the Donation :)", {
                     position: toast.POSITION.TOP_RIGHT
                 });
+                setOpenDonationPopup(false);
             })
             .catch(err => {
                 toast.error(err?.message, {
                     position: toast.POSITION.TOP_RIGHT
                 });
             });
-        setOpenDonationPopup(false);
     }
 
   return (
@@ -258,7 +258,7 @@ const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, ha
                                             text={"Donate Artist"}
                                             color="primary"
                                             onClick={() => {
-                                                openDonationPopup(item);
+                                                handleOpenDonationPopup(item);
                                             }}
                                         />
                                     </TableCell>)
@@ -296,7 +296,8 @@ const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, ha
                 setOpenPopup={setOpenAddNewPopup}
             >
                 <UploadForm
-                    handleUploadSong={handleOpenAddNewPopup}
+                  handleUploadSong={handleAddNewSong}
+                  setOpenAddNewPopup={setOpenAddNewPopup}
                 />
             </Popup>
             {/* <Notification notify={notify} setNotify={setNotify} /> */}

@@ -20,7 +20,6 @@ function App() {
   const { state } = useEth();
   const [loading, setLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState("Trying to connect to your blockchain wallet.... Please make sure you are connected to the correct blockchain network.");
-  // console.log("state: ", state);
 
   useEffect(() => {
     if (state.contract !== null && state.account !== null) {

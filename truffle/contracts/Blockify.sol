@@ -188,7 +188,7 @@ contract Blockify {
         // 1. user already owns the song
         // 2. if the amount equals the cost of the song
         require(allUsersByAddress[msg.sender].songStatus[songHash] == 0, "Song already purchased by the user.");
-        require(allSongsByHash[songHash].cost * 1 gwei == msg.value, "Amount is not equal to song's cost.");
+        require(allSongsByHash[songHash].cost * 1 wei == msg.value, "Amount is not equal to song's cost.");
 
         // transfer the money to artist of the song
         allSongsByHash[songHash].artistAddr.transfer(msg.value);

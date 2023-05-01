@@ -155,7 +155,7 @@ const SongList = ({ screen = "explore", setSelectedSong, songsList, setToggle, h
 
     const handleSongPurchase = (song) => {
         state.contract.methods
-            .purchaseSong(song.songHash).send({ from: state.account, value: song.cost * 1e9 })
+            .purchaseSong(song.songHash).send({ from: state.account, value:song.cost })
             .then(data => {
                 toast.success('Song purchased !', {
                     position: toast.POSITION.TOP_RIGHT

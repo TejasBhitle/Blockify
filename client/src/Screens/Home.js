@@ -71,16 +71,21 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         position: "fixed",
-        bottom: "0px",
-        height: "100px",
-        width: "100%",
+        bottom: "20px",
+        height: "150px",
+        // padding: "20px",
+        margin: "40px",
+        borderRadius: "30px",
+        border: "1px solid #333996",
+        width: "calc(100% - 500px)",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "white",
     },
     bottomAudioPlayer: {
         width: "50%",
-        backgroundColor: "white",
-        height: "80px"
+        padding: "20px",
+        // height: "80px"
     }
 });
 

@@ -54,12 +54,13 @@ const headCellsLibrary = [
     { id: "likeCount", label: "Likes" },
     { id: "dislikeCount", label: "Dislikes" },
     { id: "artistAddr", label: "Donate", disableSorting: true },
-    { id: "play", label: "", disableSorting: true },
+    { id: "play", label: "Play", disableSorting: true },
 ];
 
-const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, handleAddNewSong}) => {
+const SongList = ({ screen = "explore", setSelectedSong, songsList, setToggle, handleAddNewSong }) => {
+    // console.log("SongList", songsList")
     const classes = useStyles();
-    console.log(songsList);
+    // console.log(songsList);
     const { state } = useEth();
 
     const [records, setRecords] = useState(songsList);
@@ -72,14 +73,14 @@ const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, ha
     const [openDonationPopup, setOpenDonationPopup] = useState(false);
     const [donee, setDonee] = useState(null);
     const handleOpenDonationPopup = (song) => {
-        console.log("handleOpenDonationPopup", song);
+        // console.log("handleOpenDonationPopup", song);
         setDonee(song);
         setOpenDonationPopup(true);
     };
 
     const [openAddNewPopup, setOpenAddNewPopup] = useState(false);
     const handleOpenAddNewPopup = (song) => {
-        console.log("handleOpenAddNewPopup", song);
+        // console.log("handleOpenAddNewPopup", song);
         setOpenAddNewPopup(true);
     };
 
@@ -154,7 +155,7 @@ const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, ha
 
     const handleSongPurchase = (song) => {
         state.contract.methods
-            .purchaseSong(song.songHash).send({ from: state.account, value: song.cost })
+            .purchaseSong(song.songHash).send({ from: state.account, value: song.cost * 1e9 })
             .then(data => {
                 toast.success('Song purchased !', {
                     position: toast.POSITION.TOP_RIGHT
@@ -169,7 +170,7 @@ const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, ha
     }
 
     const handleSubmitDonation = ({donationAmount,artistAddr}) => {
-        console.log("artistAddr", artistAddr);
+        // console.log("artistAddr", artistAddr);
         
         state.contract.methods
             .donateToArtist(artistAddr).send({ from: state.account, value: donationAmount })

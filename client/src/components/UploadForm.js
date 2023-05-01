@@ -9,12 +9,11 @@ import { useForm, Form } from "./useForm";
 
 const initialFValues = {
     songName: "",
-    songCost: 0,
+    songCost: "",
     songFile: null,
 };
 
 export default function UploadForm(props) {
-    console.warn("DonateForm", props);
     const { handleUploadSong, setOpenAddNewPopup } = props;
 
     // const { state } = useEth();
@@ -41,6 +40,9 @@ export default function UploadForm(props) {
             return Object.values(temp).every((x) => x === "");
     };
 
+    // const handleUploadSong = (fie) => {
+        
+
     const {
         values,
         setValues,
@@ -62,6 +64,16 @@ export default function UploadForm(props) {
                 }
             });
         }
+    };
+
+    const handleFileChange = (e) => {
+        e.preventDefault();
+        const file = e.target.files[0];
+        console.log(e);
+        setValues({
+            ...values,
+            "songFile": file,
+        });
     };
 
     return (
@@ -88,8 +100,8 @@ export default function UploadForm(props) {
                     <Controls.Input
                         name="songFile"
                         // label="Song File .mp3"
-                        value={values.songFile}
-                        onChange={handleInputChange}
+                        // value={values.songFile}
+                        onChange={handleFileChange}
                         error={errors.songFile}
                         type="file"
                     />

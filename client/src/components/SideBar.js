@@ -97,11 +97,13 @@ const style = {
         },
         "& h4": {
             margin: "0px",
-            fontSize: "1rem",
+            fontSize: "0.9rem",
             overflow: "hidden",
             whiteSpace: "nowrap",
             textOverflow: "ellipsis",
             width: "100%",
+            alignItems: "center",
+            justifyContent: "center"
         },
         "& p": {
             margin: "0px",

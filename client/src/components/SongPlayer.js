@@ -1,7 +1,7 @@
 import React from 'react'
 
 const SongPlayer = ({ selectedSong }) => {
-    const { songName, songArtist, songHash } = selectedSong;
+    const { songName, artistName, songHash } = selectedSong;
   console.log("songHash", songHash);
   console.log("SongUrl", `https://ipfs.io/ipfs/${songHash}`);
   return (
@@ -15,9 +15,13 @@ const SongPlayer = ({ selectedSong }) => {
     }}>
         {/* play audio based on song url remove download option from audio player show song and artist name and also like and dislike buttons */}
           <div>SongPlayer</div>
-          {/* <h3>{songName}</h3>
-          <h3>{songArtist}</h3> */}
-        <audio src={`https://ipfs.io/ipfs/${songHash}`} autoPlay loop preload="true" controls />
+      {songName && <h3>{songName} : By Artist {artistName}</h3>}
+      <audio src={`https://ipfs.io/ipfs/${songHash}`} autoPlay loop preload="true" controls 
+        style={{
+          width: "400px",
+          height: "80px",
+        }}
+        />
     </div>
   )
 }

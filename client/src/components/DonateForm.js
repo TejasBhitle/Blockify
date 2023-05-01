@@ -15,7 +15,6 @@ const initialFValues = {
 };
 
 export default function DonateForm(props) {
-    console.warn("DonateForm", props);
     const { donee: song, handleSubmitDonation } = props;
 
     // const { state } = useEth();

@@ -4,14 +4,17 @@ import useEth from '../contexts/EthContext/useEth';
 import SongList from '../components/SongList';
 
 const Library = ({selectedSong, setSelectedSong}) => {
-    const { state } = useEth();
-    
+  const { state } = useEth();
+
+  // using this for reload data on song like/dislike or purchase
+  const [toggle, setToggle] = useState(false);
+
   const [songs, setSongs] = useState([]);
 
   useEffect(() => {
     const getSongs = async () => {
       const allSongsIds = await state.contract.methods.getPurchasedSongs().call({ from: state.account });
-      console.log("songsList",allSongsIds);
+      console.log("getPurchasedSongs",allSongsIds);
       const songs = await Promise.all(allSongsIds.map(async (songId) => {
         const song = await state.contract.methods.getSongDetails(songId).call({ from: state.account });
         // const songFile = await state.ifsClient.get(songId);
@@ -33,22 +36,24 @@ const Library = ({selectedSong, setSelectedSong}) => {
     if (state.contract && state.account) {
       getSongs();
     }
-  }, [state.contract, state.account]);
+  }, [state.contract, state.account, toggle]);
 
   return (
     <div>
-    <h1 style={{
-      display: 'flex',
-      justifyContent: 'center',
-    }}>Library</h1>
-    <div>
-      <SongList
-        songsList={songs}
-        selectedSong={selectedSong}
-                  setSelectedSong={setSelectedSong}
-                  screen='library'
-      />
-    </div>
+      <h1 style={{
+        display: 'flex',
+        justifyContent: 'center',
+        }}>My Purchased Songs
+      </h1>
+      <div>
+        <SongList
+          songsList={songs}
+          selectedSong={selectedSong}
+          setSelectedSong={setSelectedSong}
+          screen='library'
+          setToggle={setToggle}
+        />
+      </div>
   </div>
   )
 }

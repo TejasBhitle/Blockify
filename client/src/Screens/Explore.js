@@ -7,12 +7,15 @@ const Explore = ({selectedSong, setSelectedSong}) => {
 
   const { state } = useEth();
   
+  // using this for reload data on song like/dislike or purchase
+  const [toggle, setToggle] = useState(false);
+
   const [songs, setSongs] = useState([]);
 
   useEffect(() => {
     const getSongs = async () => {
       const allSongsIds = await state.contract.methods.getAllSongs().call({ from: state.account });
-      console.log("songsList",allSongsIds);
+      console.log("getAllSongs",allSongsIds);
       const songs = await Promise.all(allSongsIds.map(async (songId) => {
         const song = await state.contract.methods.getSongDetails(songId).call({ from: state.account });
         // const songFile = await state.ifsClient.get(songId);
@@ -34,7 +37,7 @@ const Explore = ({selectedSong, setSelectedSong}) => {
     if (state.contract && state.account) {
       getSongs();
     }
-  }, [state.contract, state.account]);
+  }, [state.contract, state.account, toggle]);
 
 
   return (
@@ -42,13 +45,14 @@ const Explore = ({selectedSong, setSelectedSong}) => {
       <h1 style={{
         display: 'flex',
         justifyContent: 'center',
-      }}>Explore</h1>
+      }}>Explore Songs</h1>
       <div>
         <SongList
           songsList={songs}
           selectedSong={selectedSong}
           setSelectedSong={setSelectedSong}
           screen={"explore"}
+          setToggle={setToggle}
         />
       </div>
     </div>

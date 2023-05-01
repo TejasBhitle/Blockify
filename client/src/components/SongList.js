@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react'
+import React, {useState, useRef, useEffect, useMemo} from 'react'
 import PeopleOutlineTwoToneIcon from "@material-ui/icons/PeopleOutlineTwoTone";
 import {
     Paper,
@@ -11,15 +11,20 @@ import {
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
-import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
-import CloseIcon from "@material-ui/icons/Close";
+// import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
+// import CloseIcon from "@material-ui/icons/Close";
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import ThumbDownAltIcon from '@material-ui/icons/ThumbDownAlt';
 
+import { toast } from 'react-toastify';
+
 import Controls from "./controls";
 import useTable from "./useTable";
+import Popup from "./Popup";
 
 import useEth from '../contexts/EthContext/useEth';
+import DonateForm from './DonateForm';
+import UploadForm from './UploadForm';
 
 // 'songName' : song[0],
 // 'artistAddr' : song[1],
@@ -32,27 +37,27 @@ import useEth from '../contexts/EthContext/useEth';
 // 'songHash': songId
 
 const headCellsExplore = [
-    { id: "index", label: "No" },
-    { id: "name", label: "Song Name" },
+    // { id: "index", label: "No" },
+    { id: "songName", label: "Song Name" },
     { id: "artistName", label: "Artist" },
-    { id: "like", label: "Likes" },
-    { id: "dislike", label: "Dislikes" },
+    { id: "cost", label: "Purchase Cost (GWei)"},
+    { id: "likeCount", label: "Likes" },
+    { id: "dislikeCount", label: "Dislikes" },
     { id: "action", label: "", disableSorting: true },
-    // { id: "artistAddr", label: "Actions", disableSorting: true },
 ];
 
 const headCellsLibrary = [
-    { id: "index", label: "No" },
-    { id: "name", label: "Song Name" },
+    // { id: "index", label: "No" },
+    { id: "songName", label: "Song Name" },
     { id: "artistName", label: "Artist" },
-    { id: "like", label: "Likes" },
-    { id: "dislike", label: "Dislikes" },
+    { id: "cost", label: "Purchase Cost (Gwei)"},
+    { id: "likeCount", label: "Likes" },
+    { id: "dislikeCount", label: "Dislikes" },
     { id: "artistAddr", label: "Donate", disableSorting: true },
-    {id: "play", label: "Play", disableSorting: true },
-    // { id: "artistAddr", label: "Actions", disableSorting: true },
+    { id: "play", label: "", disableSorting: true },
 ];
 
-const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}) => {
+const SongList = ({screen = "Explore", setSelectedSong, songsList, setToggle, handleAddNewSong}) => {
     const classes = useStyles();
     console.log(songsList);
     const { state } = useEth();
@@ -63,6 +68,20 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
             return items;
         },
     });
+
+    const [openDonationPopup, setOpenDonationPopup] = useState(false);
+    const [donee, setDonee] = useState(null);
+    const handleOpenDonationPopup = (song) => {
+        console.log("handleOpenDonationPopup", song);
+        setDonee(song);
+        setOpenDonationPopup(true);
+    };
+
+    const [openAddNewPopup, setOpenAddNewPopup] = useState(false);
+    const handleOpenAddNewPopup = (song) => {
+        console.log("handleOpenAddNewPopup", song);
+        setOpenAddNewPopup(true);
+    };
 
     useEffect(() => {
         setRecords(songsList);
@@ -80,33 +99,97 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
         recordsAfterPagingAndSorting,
     } = useTable(records, headCells , filterFn);
 
-    const handlePlaySong = (songHash) => {
-        console.log("handleSongClick", songHash);
-        setSelectedSong({songName: "", songArtistName: "",songHash:songHash});
+    
+
+    const handleSearch = (e) => {
+        let target = e.target;
+        setFilterFn({
+            fn: (items) => {
+                if (target.value === "") return items;
+                else
+                    return items.filter((x) =>
+                        x.songName.toLowerCase().includes(target.value) ||
+                        x.artistName.toLowerCase().includes(target.value)
+                    );
+            },
+        });
+    };
+
+    const handlePlaySong = (song) => {
+        // console.log("handleSongClick", song);
+        setSelectedSong(song);
     }
 
-    const handleSongPurchase = async (song) => {
-        // console.log("songHash",songHash);
-        const purchaseStatus = await state.contract.methods.purchaseSong(song.songHash).send({ from: state.account, value: song.cost});
-        // console.log("purchase", purchaseStatus);
-        // handlePlaySong(songHash);
+    const handleLikeSong = (song) => {
+        state.contract.methods
+            .likeSong(song.songHash).send({ from: state.account })
+            .then(data => {
+                toast.success('Song liked !', {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+                setToggle(toggle => !toggle);
+            })
+            .catch(err => {
+                toast.error(err?.message, {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            })
     }
 
-    const handleDonateArtist = async (artistAddr) => {
+    const handleDislikeSong = (song) => {
+        state.contract.methods
+            .dislikeSong(song.songHash).send({ from: state.account })
+            .then(data => {
+                toast.success('Song disliked !', {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+                setToggle(toggle => !toggle);
+            })
+            .catch(err => {
+                toast.error(err?.message, {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            })
+    }
+
+    const handleSongPurchase = (song) => {
+        state.contract.methods
+            .purchaseSong(song.songHash).send({ from: state.account, value: song.cost })
+            .then(data => {
+                toast.success('Song purchased !', {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+                setToggle(toggle => !toggle);
+            })
+            .catch(err => {
+                toast.error(err?.message, {
+                    position: toast.POSITION.TOP_RIGHT
+                })
+            });
+    }
+
+    const handleSubmitDonation = ({donationAmount,artistAddr}) => {
         console.log("artistAddr", artistAddr);
-        const donationStatus = await state.contract.methods.donateToArtist(artistAddr).send({ from: state.account });
-        console.log("donationStatus", donationStatus);
+        
+        state.contract.methods
+            .donateToArtist(artistAddr).send({ from: state.account, value: donationAmount })
+            .then(data => {
+                toast.success("Thanks for the Donation :)", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            })
+            .catch(err => {
+                toast.error(err?.message, {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            });
+        setOpenDonationPopup(false);
     }
 
   return (
       <>
-          {/* <PageHeader
-                title="New Employee"
-                subTitle="Form design with validation"
-                icon={<PeopleOutlineTwoToneIcon fontSize="large" />}
-            /> */}
             <Paper className={classes.pageContent}>
-                {/* <Toolbar>
+                <Toolbar>
                     <Controls.Input
                         label="Search Employees"
                         className={classes.searchInput}
@@ -118,18 +201,21 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
                             ),
                         }}
                         onChange={handleSearch}
-                    />
+                  />
+                  {
+                    screen === "upload" &&
                     <Controls.Button
-                        text="Add New"
+                        text="Upload New Song"
                         variant="outlined"
                         startIcon={<AddIcon />}
                         className={classes.newButton}
                         onClick={() => {
-                            setOpenPopup(true);
-                            setRecordForEdit(null);
+                            handleOpenAddNewPopup(true);
+                            // setRecordForEdit(null);
                         }}
                     />
-                </Toolbar> */}
+                  }
+                </Toolbar>
                 <TblContainer>
                     <TblHead />
                     <TableBody>
@@ -137,17 +223,17 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
                             <TableRow key={item.songHash}
                                 // onClick={(event) => handlePlaySong(item.hash)}
                             >
-                                <TableCell>{index+1}</TableCell>
                                 <TableCell>{item.songName}</TableCell>
                                 <TableCell>{item.artistName}</TableCell>
+                                <TableCell>{item.cost/1e9}</TableCell>
                                 <TableCell>
                                     <Controls.ActionButton
-                                        color={item.songStatus===2 ? "success" : ""}
+                                        color={item.songStatus==='3' ? "success" : ""}
                                         onClick={() => {
-                                            // (item.hash);
+                                            handleLikeSong(item);
                                         }}
                                         startIcon={<ThumbUpAltIcon />}
-                                        disabled={item.songStatus==='0' || item.songStatus === '2'}
+                                        disabled={item.songStatus == 3 || item.songStatus == 0}
                                     >
                                         {item.likeCount}
                                     </Controls.ActionButton>
@@ -155,12 +241,12 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
                                 </TableCell>
                                 <TableCell>
                                     <Controls.ActionButton
-                                        color={item.songStatus==='3' ? "error" : ""}
+                                        color={item.songStatus==='2' ? "error" : ""}
                                         onClick={() => {
-                                            // blockifyServices.dislikeSong(item.hash);
+                                            handleDislikeSong(item);
                                         }}
                                         startIcon={<ThumbDownAltIcon />}
-                                        disabled={item.songStatus==='0' || item.status === '3'}
+                                        disabled={item.songStatus == 2 || item.songStatus == 0}
                                     >
                                         {item.dislikeCount}
                                     </Controls.ActionButton>
@@ -171,8 +257,8 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
                                         <Controls.Button
                                             text={"Donate Artist"}
                                             color="primary"
-                                            onClick={async() => {
-                                                await handleDonateArtist(item.artistAddr);
+                                            onClick={() => {
+                                                openDonationPopup(item);
                                             }}
                                         />
                                     </TableCell>)
@@ -181,39 +267,12 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
                                     <Controls.Button
                                         text={item.songStatus==='0' ? "Purchase" : "Play"}
                                         color="primary"
-                                        onClick={async() => {
+                                        onClick={() => {
                                             item.songStatus === '0' ?
-                                                await handleSongPurchase(item) :
+                                                handleSongPurchase(item) :
                                                 handlePlaySong(item)
                                         }}
                                     />
-                                </TableCell>
-                                <TableCell>
-                                    {/* <Controls.ActionButton
-                                        color="primary"
-                                        onClick={() => {
-                                            openInPopup(item);
-                                        }}
-                                    >
-                                        <EditOutlinedIcon fontSize="small" />
-                                    </Controls.ActionButton>
-                                    <Controls.ActionButton
-                                        color="secondary"
-                                        onClick={() => {
-                                            setConfirmDialog({
-                                                isOpen: true,
-                                                title:
-                                                    "Are you sure to delete this record?",
-                                                subTitle:
-                                                    "You can't undo this operation",
-                                                onConfirm: () => {
-                                                    onDelete(item.id);
-                                                },
-                                            });
-                                        }}
-                                    >
-                                        <CloseIcon fontSize="small" />
-                                    </Controls.ActionButton> */}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -221,18 +280,27 @@ const SongList = ({screen = "Explore", selectedSong, setSelectedSong, songsList}
                 </TblContainer>
                 <TblPagination />
             </Paper>
-            {/* <Popup
-                title="Employee Form"
-                openPopup={openPopup}
-                setOpenPopup={setOpenPopup}
+            <Popup
+                title="Artist Donation"
+                openPopup={openDonationPopup}
+                setOpenPopup={setOpenDonationPopup}
             >
-                <EmployeeForm
-                    recordForEdit={recordForEdit}
-                    addOrEdit={addOrEdit}
+                <DonateForm
+                    donee={donee}
+                    handleSubmitDonation={handleSubmitDonation}
                 />
             </Popup>
-            <Notification notify={notify} setNotify={setNotify} />
-            <ConfirmDialog
+            <Popup
+                title="Upload New Song"
+                openPopup={openAddNewPopup}
+                setOpenPopup={setOpenAddNewPopup}
+            >
+                <UploadForm
+                    handleUploadSong={handleOpenAddNewPopup}
+                />
+            </Popup>
+            {/* <Notification notify={notify} setNotify={setNotify} /> */}
+            {/* <ConfirmDialog
                 confirmDialog={confirmDialog}
                 setConfirmDialog={setConfirmDialog}
             /> */}
@@ -246,7 +314,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3),
     },
     searchInput: {
-        width: "75%",
+        width: "50%",
     },
     newButton: {
         position: "absolute",

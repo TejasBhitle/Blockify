@@ -6,6 +6,7 @@ import {
 } from "@material-ui/core";
 import { createTheme } from '@material-ui/core/styles';
 
+
 import SideBar from '../components/SideBar'
 import Explore from './Explore';
 import Library from './Library';
@@ -20,19 +21,69 @@ const Home = () => {
 
   return (
       <ThemeProvider theme={theme}>
-          <CssBaseline/>
-          <SideBar screen={screen} setScreen={setScreen} />
-          <div className={classes.appMain}>
-            {screen === "explore" && <Explore selectedSong={selectedSong} setSelectedSong={setSelectedSong} />}
-            {screen === "library" && <Library selectedSong={selectedSong} setSelectedSong={setSelectedSong} />}
-            {screen === "upload" && <Upload selectedSong={selectedSong} setSelectedSong={setSelectedSong} />}
-              <div className={classes.bottomAudioPlayer}>
-                <SongPlayer selectedSong={selectedSong} />
+        <CssBaseline />
+        <div className={classes.root}>
+            <div className={classes.sideBar}>
+                <SideBar screen={screen} setScreen={setScreen} />
             </div>
-          </div>
+            <div className={classes.appMain}>
+                {screen === "explore" && <Explore selectedSong={selectedSong} setSelectedSong={setSelectedSong} />}
+                {screen === "library" && <Library selectedSong={selectedSong} setSelectedSong={setSelectedSong} />}
+                {screen === "upload" && <Upload selectedSong={selectedSong} setSelectedSong={setSelectedSong} />}
+                  <div className={classes.bottomAudioPlayerContainer}>
+                    <div className={classes.bottomAudioPlayer}>
+                        <SongPlayer selectedSong={selectedSong} />
+                    </div>
+                  </div>
+              </div>
+        </div>
     </ThemeProvider>
   )
 }
+
+
+const useStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        height: "100vh",
+        width: "100vw",
+    },
+    sideBar: {
+        display: "flex",
+        flexDirection: "column",
+        position: "absolute",
+        left: "0px",
+        width: "420px",
+        flexGrow: 0,
+        height: "100vh",
+        backgroundColor: "#253053",
+        color: "white",
+        justifyContent: "space-between",
+    },
+    appMain: {
+        paddingLeft: "420px",
+        height: "100vh",
+        flexGrow: 1,
+    },
+    bottomAudioPlayerContainer: {
+        display: "flex",
+        flexDirection: "column",
+        position: "fixed",
+        bottom: "0px",
+        height: "100px",
+        width: "100%",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    bottomAudioPlayer: {
+        width: "50%",
+        backgroundColor: "white",
+        height: "80px"
+    }
+});
+
 
 const theme = createTheme({
     palette: {
@@ -82,17 +133,6 @@ const theme = createTheme({
             disableRipple: true,
         },
     },
-});
-
-const useStyles = makeStyles({
-    appMain: {
-        paddingLeft: "420px",
-        width: "100%",
-    },
-    bottomAudioPlayer: {
-        paddingLeft: "420px",
-        width: "100%",   
-    }
 });
 
 export default Home

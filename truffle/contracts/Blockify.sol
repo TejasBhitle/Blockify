@@ -3,7 +3,7 @@ pragma solidity ^0.8.11;
 
 contract Blockify {
     
-    uint public constant CHANGE = 0.01 ether;
+    uint public constant CHANGE = 10000 gwei;
 
     struct Song {
         string name;
@@ -73,6 +73,8 @@ contract Blockify {
         user.name = userName;
         isUserNameTaken[userName] = true;
         usersCount++;
+
+        emit UserRegisterEvent(userName, msg.sender);
     }
 
     function getUserNameFromAddress(
@@ -149,7 +151,7 @@ contract Blockify {
         Song storage song = allSongsByHash[songHash];
         song.name = songName;
         song.hash = songHash;
-        song.cost = songCost;
+        song.cost = songCost * 1 gwei;
         song.artistAddr = payable(msg.sender);
         song.artistName = this.getUserNameFromAddress(msg.sender);
         song.likeCount = 0;
@@ -158,6 +160,8 @@ contract Blockify {
 
         allSongs.push(songHash);
         allUsersByAddress[msg.sender].songStatus[songHash] = 4; //mark as owner
+
+        emit SongUploadEvent(songName, songHash, song.artistAddr, songCost);
     }
 
 
@@ -182,8 +186,8 @@ contract Blockify {
         // check if 
         // 1. user already owns the song
         // 2. if the amount equals the cost of the song
-        require(allUsersByAddress[msg.sender].songStatus[songHash] == 1, "Song already purchased by the user.");
-        require(allSongsByHash[songHash].cost * 1 wei == msg.value, "Amount is not equal to song's cost.");
+        require(allUsersByAddress[msg.sender].songStatus[songHash] == 0, "Song already purchased by the user.");
+        require(allSongsByHash[songHash].cost * 1 gwei == msg.value, "Amount is not equal to song's cost.");
 
         // transfer the money to artist of the song
         allSongsByHash[songHash].artistAddr.transfer(msg.value);
@@ -194,13 +198,13 @@ contract Blockify {
         // update SongStatus
         allUsersByAddress[msg.sender].songStatus[songHash] = 1; // mark as purchased
 
-        // emit SongPurchaseEvent(
-        //     allSongsByHash[songHash].name,
-        //     songHash,
-        //     allSongsByHash[songHash].artistAddr,
-        //     allSongsByHash[songHash].cost,
-        //     msg.sender
-        // );
+        emit SongPurchaseEvent(
+            allSongsByHash[songHash].name,
+            songHash,
+            allSongsByHash[songHash].artistAddr,
+            allSongsByHash[songHash].cost,
+            msg.sender
+        );
 
         return(
             allUsersByAddress[msg.sender].songsBought,
@@ -225,7 +229,13 @@ contract Blockify {
 
         allSongsByHash[songHash].likeCount++;
         allSongsByHash[songHash].cost += CHANGE ; // increase popularity
+
+        if(allUsersByAddress[msg.sender].songStatus[songHash] == 2){ // song previosuly disliked by the user
+            allSongsByHash[songHash].dislikeCount--;
+        }
         allUsersByAddress[msg.sender].songStatus[songHash] = 3; //mark as liked
+
+        emit SongLikedEvent(songHash, allSongsByHash[songHash].cost);
     }
 
     event SongDislikedEvent(
@@ -244,7 +254,13 @@ contract Blockify {
 
         allSongsByHash[songHash].dislikeCount++;
         allSongsByHash[songHash].cost -= CHANGE; // decrease popularity
+
+        if(allUsersByAddress[msg.sender].songStatus[songHash] == 3){ // song previosuly liked by the user
+            allSongsByHash[songHash].likeCount--;
+        }
         allUsersByAddress[msg.sender].songStatus[songHash] = 2; //mark as disliked
+
+        emit SongDislikedEvent(songHash, allSongsByHash[songHash].cost);
     }
 
 
@@ -262,6 +278,7 @@ contract Blockify {
 
         // donate amount to artist
         artistAddress.transfer(msg.value);
+        emit ArtistDonatedEvent(msg.value, artistAddress, msg.sender);
     }
 
 

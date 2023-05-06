@@ -1,9 +1,9 @@
 import React from 'react'
+import useEth from '../contexts/EthContext/useEth';
 
 const SongPlayer = ({ selectedSong }) => {
-    const { songName, artistName, songHash } = selectedSong;
-  console.log("songHash", songHash);
-  console.log("SongUrl", `https://ipfs.io/ipfs/${songHash}`);
+  const { songName, artistName, songURL} = selectedSong;
+
   return (
     <div style={{
       display: "flex",
@@ -16,7 +16,7 @@ const SongPlayer = ({ selectedSong }) => {
         {/* play audio based on song url remove download option from audio player show song and artist name and also like and dislike buttons */}
           <div>SongPlayer</div>
       {songName && <h3>{songName} : By Artist {artistName}</h3>}
-      <audio src={`https://ipfs.io/ipfs/${songHash}`} autoPlay loop preload="true" controls 
+      <audio src={songURL} autoPlay loop preload="true" controls 
         style={{
           width: "400px",
           height: "80px",

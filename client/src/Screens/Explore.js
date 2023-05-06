@@ -27,8 +27,9 @@ const Explore = ({selectedSong, setSelectedSong}) => {
           'dislikeCount' : song[4],
           'cost' : song[5],
           'songStatus' : song[6],
-          'songURL' : `https://ipfs.io/ipfs/${songId}`,
-          'songHash': songId
+          'songURL' : `https://${songId}.ipfs.w3s.link/${song[7]}`,
+          'songHash': songId,
+          'songFileName': song[7]
         };
       }));
       console.log("songs",songs);

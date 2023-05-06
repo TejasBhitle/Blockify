@@ -13,6 +13,7 @@ contract Blockify {
         uint256 likeCount;
         uint256 dislikeCount;
         uint256 cost;
+        string songFileName;
     }
 
     struct User {
@@ -93,17 +94,23 @@ contract Blockify {
             uint256,
             uint256,
             uint256,
-            uint256
+            uint256,
+            string memory
         ){
 
+            Song memory song = allSongsByHash[songHash];
+            User storage user = allUsersByAddress[msg.sender];
+            uint status = user.songStatus[songHash];
+
             return (
-                allSongsByHash[songHash].name,
-                allSongsByHash[songHash].artistAddr,
-                allSongsByHash[songHash].artistName,
-                allSongsByHash[songHash].likeCount,
-                allSongsByHash[songHash].dislikeCount,
-                allSongsByHash[songHash].cost,
-                allUsersByAddress[msg.sender].songStatus[songHash]
+                song.name,
+                song.artistAddr,
+                song.artistName,
+                song.likeCount,
+                song.dislikeCount,
+                song.cost,
+                status,
+                song.songFileName
             );
     }
 
@@ -140,6 +147,7 @@ contract Blockify {
     function uploadSong(
         string memory songName,
         string memory songHash,
+        string memory songFileName,
         uint256 songCost
     ) public 
       registeredUser(msg.sender) {
@@ -150,6 +158,7 @@ contract Blockify {
         Song storage song = allSongsByHash[songHash];
         song.name = songName;
         song.hash = songHash;
+        song.songFileName = songFileName;
         song.cost = songCost * 1 gwei;
         song.artistAddr = payable(msg.sender);
         song.artistName = this.getUserNameFromAddress(msg.sender);
@@ -285,6 +294,10 @@ contract Blockify {
 
     function stringEquals(string memory a, string memory b) public pure returns (bool) {
         return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
+    }
+
+    function stringAppend(string memory a, string memory b, string memory c) internal pure returns (string memory) {
+        return string(abi.encodePacked(a, b, c));
     }
 
 

@@ -29,8 +29,9 @@ const Upload = ({selectedSong, setSelectedSong}) => {
           'dislikeCount' : song[4],
           'cost' : song[5],
           'songStatus' : song[6],
-          'songURL' : `https://ipfs.io/ipfs/${songId}`,
-          'songHash': songId
+          'songURL' : `https://${songId}.ipfs.w3s.link/${song[7]}`,
+          'songHash': songId,
+          'songFileName': song[7]
         };
       }));
       console.log("songs",songs);
@@ -42,12 +43,18 @@ const Upload = ({selectedSong, setSelectedSong}) => {
   }, [state.contract, state.account, toggle]);
 
   const handleAddNewSong = async ({songName, songCost, songFile, closePopup}) => {
-    const ipfsUpload = await state.ipfsClient.add(songFile);
-    console.log(ipfsUpload);
-    const songHash = ipfsUpload.path;
+    console.log("songName", songName);
+    console.log("songCost", songCost);
+    console.log("songFile", songFile);
+
+    // songFile.screenName = songName;
+    const songFileName = songFile.name;
+    const songHash = await state.ipfsClient.put([songFile]);
+    console.log('File uploaded with CID:', songFileName, songName, songHash);
+    // const songHash = ipfsUpload.path;
 
     state.contract.methods
-      .uploadSong(songName, songHash, songCost).send({ from: state.account })
+      .uploadSong(songName, songHash, songFileName, songCost).send({ from: state.account })
       .then(data => {
         console.log("upload successful :", data)
         toast.success('Song uploaded !', {
@@ -85,3 +92,6 @@ const Upload = ({selectedSong, setSelectedSong}) => {
 }
 
 export default Upload
+
+// https://bafybeigzpxg2powlrwf3aoa4xy4uj7nouj7x23hq7ioxosnexbhvo56zx4.ipfs.w3s.link/hOSAANA.MP3
+// https://bafybeigzpxg2powlrwf3aoa4xy4uj7nouj7x23hq7ioxosnexbhvo56zx4.ipfs.dweb.link/hOSAANA.MP3%7D

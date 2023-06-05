@@ -1,6 +1,26 @@
 # Blockify
 
+# Problem
+In this project, we are targeting a centralized (non-blockchain based) music streaming platform.
+Following are the issues with the same :
+
+* Centralized control: Music streaming companies with centralized control have all the data and control of the platform. Data privacy concerns, censorship, and lack of transparency can result from this.
+* Royalties: A music streaming platform's royalty payment structure has been criticized, with some arguing that it is unfair and inadequately compensates artists.
+* Limited access: Due to licensing restrictions and geo-blocking, some regions may not be able to access such a music streaming platform.
+* Copyright issues: The technology of a centralized platform doesn’t support copyright issues inherently. For any such issues, claims are required to be made to the platform's support team or using other legal measures.
+
+
+## Abstract
+A decentralized music streaming platform that would aim to provide a fair and transparent revenue sharing model, ensuring that music artists will be paid fairly for their work. The platform would also provide greater control and ownership over music rights, enabling artists to manage their music independently without relying on record labels. Users of the platform will buy the music from artists. On the platform, users can also earn rewards for listening, sharing, and promoting music, which can be managed securely via the blockchain. As a result, users' data can be protected from misuse and exploitation, ensuring their privacy.Overall, Blockify can create a more democratic platform for music distribution and consumption.
+
+
+## Digital Asset and Token
+Our platform will be built on the Ethereum blockchain as it is one of the most popular blockchain platforms and Etheruem also offers a wide range of tools and resources for building DApps.
+The platform’s NFT will be the Audio file for governance and incentivizing users to participate in the network. This audio file can be bought/sold like other digital assets.
+
+
 # Architecture
+![Alt](/docs/arch.jpg "Architecture")
 Explanation of Architecture:
 * There are two types of Users in our system :- User (Music Listener) and Artist. 
   Users use our application to buy songs from artists and listen to them. 
@@ -10,6 +30,7 @@ Explanation of Architecture:
 * We are using IPFS (Interplantery File System, a decentralized file storage) for storing all the songs uploaded by the artist. This is our off-chain data storage. We are currently running a local instance of IPFS.
 * To support our Blockchain locally, we are using Ganache + Truffle suite
 
+![Alt](/docs/usecase.jpg "Use Case")
 
 <br><br>
 # Global hosting and Deployment Steps:

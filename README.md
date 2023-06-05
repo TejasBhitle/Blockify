@@ -20,17 +20,16 @@ The platform’s NFT will be the Audio file for governance and incentivizing use
 
 
 # Architecture
-![Alt](/docs/arch.jpg "Architecture")
+<img src="/docs/arch.jpg" width="500"/>
 Explanation of Architecture:
-* There are two types of Users in our system :- User (Music Listener) and Artist. 
-  Users use our application to buy songs from artists and listen to them. 
-  Artist can upload their songs on our application for users to buy them
+* There are two types of Users in our system :- User (Music Listener) and Artist. Users use our application to buy songs from artists and listen to them. Artist can upload their songs on our application for users to buy them
 * Our Application consists of a frontend website based on React. Users can perform the list of smart contract operations mentioned in the diagram above.
 * Our application uses Metamask as the wallet for performing and validating all the transactions
-* We are using IPFS (Interplantery File System, a decentralized file storage) for storing all the songs uploaded by the artist. This is our off-chain data storage. We are currently running a local instance of IPFS.
-* To support our Blockchain locally, we are using Ganache + Truffle suite
+* We are using IPFS (Interplantery File System, a decentralized file storage) for storing all the songs uploaded by the artist. This is our off-chain data storage. We are currently running a local instance of IPFS
+<br>
 
-![Alt](/docs/usecase.jpg "Use Case")
+# Use case
+<img src="/docs/usecase.jpg" width="500"/>
 
 <br><br>
 # Global hosting and Deployment Steps:

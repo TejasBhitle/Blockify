@@ -30,7 +30,7 @@ function EthProvider({ children }) {
           console.error(err);
         }
         const userName = await contract.methods.getUserNameFromAddress(accounts[0]).call({ from: accounts[0] });
-        const ipfsClient = new Web3Storage({ token: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDQ2MDRBQkI0ZDk1YzdmQjA0QWZlNDhiODIwQTJGRGJkQzk0RGQxNTkiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2ODMyOTAyMDA2NTgsIm5hbWUiOiJyaWRkaGFtciJ9.zH-EPD0sH8t-Za2Z2_9irGXnwgf6DAE8Jq1zgF3-_Eo` })
+        const ipfsClient = new Web3Storage({ token: `<insert ipfs token here>` })
 
         dispatch({
           type: actions.init,
